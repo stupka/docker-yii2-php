@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
                 php5.6-pspell \
                 php5.6-xml \
                 php5.6-xmlrpc \
+                php5.6-zip \
                 php-apcu \
                 php-memcached \
                 php-pear \
@@ -61,6 +62,8 @@ RUN apt-get update && apt-get install -y make php-pear php5.6-dev curl \
     && echo 'extension=/usr/lib/php/20131226/pdo_oci.so' > /etc/php/5.6/mods-available/pdo_oci.ini \
     && phpenmod oci8 pdo_oci \
     && rm -rf "$TMP_DIR" \
+# install composer
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && rm -rf /var/lib/apt/lists/* && apt-get purge -y --auto-remove php-pear php5.6-dev curl
 
 
@@ -75,8 +78,8 @@ COPY  etc/apache2/sites-enabled/default-ssl.conf /etc/apache2/sites-enabled/defa
 
 RUN ln -r -s /etc/apache2/mods-available/rewrite.load  /etc/apache2/mods-enabled/rewrite.load
 
-COPY etc/php5/apache2/conf.d/20-xdebug.ini /etc/php5/apache2/conf.d/20-xdebug.ini
-RUN rm -f /etc/php5/apache2/conf.d/php.ini
+COPY etc/php5/apache2/conf.d/20-xdebug.ini /etc/php/5.6/apache2/conf.d/20-xdebug.ini
+#RUN rm -f /etc/php5/apache2/conf.d/php.ini
 
 RUN echo "# Oracle enviroment variables" >>  /etc/apache2/envvars && \ 
     echo "export NLS_DATE_FORMAT=DD.MM.YYYY" >>  /etc/apache2/envvars && \ 
